@@ -1,7 +1,9 @@
 <?php
 // app/models/Contato.php
+// app/models/Contato.php - Linha 4 (ou 3)
+// Usamos dirname(__DIR__) para subir até a pasta 'app' com segurança e entrar em 'config'
+require_once dirname(__DIR__) . '/config/database.php';
 
-require_once __DIR__ . '/../config/database.php';
 
 class Contato {
     // Função responsável por salvar o lead no banco de dados
