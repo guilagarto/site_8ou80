@@ -1,0 +1,8 @@
+# Ignorar arquivos de configuração local com senhas
+app/config/database.php
+.env
+
+# Ignorar arquivos do sistema operacional e do VS Code
+.vscode/
+.DS_Store
+Thumbs.db
