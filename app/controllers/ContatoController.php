@@ -38,59 +38,54 @@ class ContatoController {
                 $sucesso = Contato::salvar($nome, $email, $telefone, $mensagem);
                 
                 if ($sucesso) {
-                    // Guarda o alerta de sucesso na sessão para a View exibir
-                    $_SESSION['sucesso'] = "Sua mensagem foi enviada com sucesso! Logo entraremos em contato.";
+    // Guarda o alerta de sucesso na sessão para a View exibir
+    $_SESSION['sucesso'] = "Sua mensagem foi enviada com sucesso! Logo entraremos em contato.";
 
-                    // ==========================================================================
-                    // 🚀 DISPARO BLINDADO: NOTIFICAÇÃO PRIVADA VIA cURL (TELEGRAM API CORRIGIDA)
-                    // ==========================================================================
-                    $tokenAPI = '8850246552:AAFyB-WP2GLwu7iTn9Xx7dSczAB5hLW7EZk'; 
-                    $chatID   = '6946692075';       
+    // ==========================================================================
+    // 🚀 DISPARO BLINDADO: NOTIFICAÇÃO PRIVADA VIA cURL COM USER-AGENT (TELEGRAM)
+    // ==========================================================================
+    $tokenAPI = '8850246552:AAFyB-WP2GLwu7iTn9Xx7dSczAB5hLW7EZk'; 
+    $chatID   = '6946692075';       
 
-                    // Formata a mensagem com Markdown para chegar organizada no seu celular
-                    $textoTelegram = "💼 *Novo Lead Recebido - 8ou80*\n\n";
-                    $textoTelegram .= "👤 *Nome:* " . $nome . "\n";
-                    $textoTelegram .= "📧 *E-mail:* " . $_POST['email'] . "\n";
-                    $textoTelegram .= "📞 *Telefone:* " . (!empty($telefone) ? $telefone : "Não informado") . "\n\n";
-                    $textoTelegram .= "💬 *Mensagem:* \n" . $_POST['mensagem'];
+    // Formata a mensagem usando tags HTML (Evita falhas de caracteres especiais do Markdown)
+    $textoTelegram = "💼 <b>Novo Lead Recebido - 8ou80</b>\n\n";
+    $textoTelegram .= "👤 <b>Nome:</b> " . htmlspecialchars($nome) . "\n";
+    $textoTelegram .= "📧 <b>E-mail:</b> " . htmlspecialchars($_POST['email']) . "\n";
+    $textoTelegram .= "📞 <b>Telefone:</b> " . (!empty($telefone) ? htmlspecialchars($telefone) : "Não informado") . "\n\n";
+    $textoTelegram .= "💬 <b>Mensagem:</b> \n" . htmlspecialchars($_POST['mensagem']);
 
-                    // 🛠️ ENDPOINT CORRIGIDO: Agora apontando para api.telegram.org/bot
-                    $urlTelegram = "https://telegram.org" . $tokenAPI . "/sendMessage";
+    // Monta o endpoint oficial correto
+    $urlTelegram = "https://telegram.org" . $tokenAPI . "/sendMessage";
 
-                    // Prepara os dados para o envio seguro via POST
-                    $dados = [
-                        'chat_id'    => $chatID,
-                        'text'       => $textoTelegram,
-                        'parse_mode' => 'Markdown'
-                    ];
+    // Prepara os dados alterando o parse_mode para HTML
+    $dados = [
+        'chat_id'    => $chatID,
+        'text'       => $textoTelegram,
+        'parse_mode' => 'HTML'
+    ];
 
-                    // Inicia o motor cURL profissional (Aceito por todas as hospedagens e pelo XAMPP)
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $urlTelegram);
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($dados));
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3); // Tempo limite de 3 segundos
-                    curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignora erros de certificado SSL locais
+    // Inicia o motor cURL profissional
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $urlTelegram);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($dados));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); // Aumentado para 5 segundos para garantir a entrega
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Evita bloqueios por falta de certificados locais
+    
+    // 🛡️ CORREÇÃO DE SEGURANÇA: Identifica a requisição para o Telegram não barrar o servidor
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
 
-                    // Executa o disparo silencioso em segundo plano
-                    curl_exec($ch);
-                    curl_close($ch);
+    // Executa o disparo invisível em segundo plano
+    curl_exec($ch);
+    curl_close($ch);
 
-                    // 🔄 Redireciona via GET limpando os dados de post do navegador
-                    header("Location: contato");
-                    exit;
-                } else {
-                    $_SESSION['erro'] = "Houve um erro técnico ao salvar sua mensagem. Tente novamente.";
-                    header("Location: contato");
-                    exit;
-                }
-            } else {
-                $_SESSION['erro'] = "Por favor, preencha todos os campos obrigatórios com um formato de e-mail válido.";
-                header("Location: contato");
-                exit;
-            }
+    // 🔄 Redireciona via GET limpando os dados de post do navegador
+    header("Location: contato");
+    exit;
+}
+
         }
 
         // Se for uma requisição GET normal (Apenas abrindo a página), carrega a View
