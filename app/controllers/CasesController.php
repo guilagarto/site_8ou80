@@ -10,10 +10,12 @@ class CasesController {
         
         $query = $db->query("SELECT id, badge, titulo, descricao, metrica, slug FROM cases ORDER BY id DESC");
         
-        // 🛠️ LOGICA UNIVERSAL: Compatível com XAMPP (PDO) e Web (MySQLi)
+        // 🛠️ PARSER COMPATÍVEL: Varre o objeto independente do driver ativo do servidor
         $meusCases = [];
-        while ($row = $query->fetch()) {
-            $meusCases[] = $row;
+        if ($query) {
+            foreach ($query as $row) {
+                $meusCases[] = $row;
+            }
         }
 
         require_once __DIR__ . '/../views/cases.php';

@@ -10,10 +10,12 @@ class BlogController {
         
         $query = $db->query("SELECT id, categoria, titulo, resumo, slug, publicado_em FROM posts ORDER BY id DESC");
         
-        // 🛠️ LOGICA UNIVERSAL: Lê os dados linha por linha de forma compatível com PDO e MySQLi
+        // 🛠️ PARSER COMPATÍVEL: Varre os registros sem acionar métodos individuais indesejados
         $meusPosts = [];
-        while ($row = $query->fetch()) {
-            $meusPosts[] = $row;
+        if ($query) {
+            foreach ($query as $row) {
+                $meusPosts[] = $row;
+            }
         }
 
         require_once __DIR__ . '/../views/blog.php';

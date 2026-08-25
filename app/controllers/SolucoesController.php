@@ -10,10 +10,12 @@ class SolucoesController {
         
         $query = $db->query("SELECT id, titulo, descricao, icone, preco, ordem FROM solucoes ORDER BY ordem ASC");
         
-        // 🛠️ LOGICA UNIVERSAL: Compatível com XAMPP (PDO) e Web (MySQLi)
+        // 🛠️ PARSER COMPATÍVEL: Extrai a matriz de dados de forma universal para PDO e MySQLi
         $todasSolucoes = [];
-        while ($row = $query->fetch()) {
-            $todasSolucoes[] = $row;
+        if ($query) {
+            foreach ($query as $row) {
+                $todasSolucoes[] = $row;
+            }
         }
 
         require_once __DIR__ . '/../views/solucoes.php';
