@@ -9,6 +9,6 @@ $router->get('solucoes', 'SolucoesController@index');
 $router->get('contato', 'ContatoController@index');
 $router->get('cases', 'CasesController@index');
 $router->get('blog', 'BlogController@index');
-$router->get('blog/post', 'BlogController@post');
+$router->get('post', 'BlogController@post'); 
 $router->get('politica-de-privacidade', 'PoliticaController@index');
 $router->get('termos-de-uso', 'PoliticaController@termos');

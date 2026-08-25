@@ -11,16 +11,7 @@ require_once __DIR__ . '/header.php';
         <p>Começe hoje uma nova etapa no seu empreendimento</p>
     </section>
 
-    <section class="features">
-        <!-- Exibe alertas na tela caso o controller envie alguma resposta -->
-<?php if (isset($mensagem_sucesso)): ?>
-    <div style="color: green; font-weight: bold; margin-bottom: 20px;"><?= $mensagem_sucesso ?></div>
-<?php endif; ?>
-
-<?php if (isset($mensagem_erro)): ?>
-    <div style="color: red; font-weight: bold; margin-bottom: 20px;"><?= $mensagem_erro ?></div>
-<?php endif; ?>
-
+ 
 <!-- O action aponta para a própria rota de contato -->
 <!-- 🎨 ESTILIZAÇÃO COMPLETA DO FORMULÁRIO -->
 <style>
@@ -159,6 +150,19 @@ require_once __DIR__ . '/header.php';
 
 
     </section>
+<!-- Código para limpar os campos após o envio de sucesso -->
+<?php if (isset($mensagem_sucesso) && !empty($mensagem_sucesso)): ?>
+<script>
+    // Executa assim que a página terminar de carregar na tela
+    document.addEventListener("DOMContentLoaded", function() {
+        // Busca o formulário da página e limpa todos os campos de texto
+        const formulario = document.querySelector("form");
+        if (formulario) {
+            formulario.reset();
+        }
+    });
+</script>
+<?php endif; ?>
 
     <!-- Exemplo de link usando a rota configurada -->
     <p>Quer saber mais? <a href="sobre" class="btn">Visite a página Sobre Nós</a></p>

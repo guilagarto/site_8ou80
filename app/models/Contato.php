@@ -1,27 +1,38 @@
 <?php
 // app/models/Contato.php
-// app/models/Contato.php - Linha 4 (ou 3)
-// Usamos dirname(__DIR__) para subir até a pasta 'app' com segurança e entrar em 'config'
-require_once dirname(__DIR__) . '/config/database.php';
 
+require_once __DIR__ . '/../config/database.php';
 
 class Contato {
-    // Função responsável por salvar o lead no banco de dados
-    // app/models/Contato.php
 
-public static function salvar($nome, $email, $telefone, $mensagem) {
-    $conexao = Database::conectar();
+    /**
+     * Salva os dados do lead de forma compatível com PDO (Local) e MySQLi (Online)
+     */
+    public static function salvar($nome, $email, $telefone, $mensagem) {
+        // 1. Pega a conexão ativa do seu database.php
+        $db = Database::conectar();
 
-    // CORREÇÃO: Mudamos de text_mensagem para mensagem para bater com a tabela
-    $stmt = $conexao->prepare("INSERT INTO contatos (nome, email, telefone, mensagem) VALUES (?, ?, ?, ?)");
-    
-    $stmt->bind_param("ssss", $nome, $email, $telefone, $mensagem);
-    $executou = $stmt->execute();
+        // 2. Verifica dinamicamente se a conexão retornada é PDO (Local) ou MySQLi (Online)
+        if ($db instanceof PDO) {
+            
+            // --- CÓDIGO SEGURO PARA O SEU LOCALHOST (PDO) ---
+            $stmt = $db->prepare("INSERT INTO contatos (nome, email, telefone, mensagem) VALUES (?, ?, ?, ?)");
+            return $stmt->execute([$nome, $email, $telefone, $mensagem]);
 
-    $stmt->close();
-    $conexao->close();
-
-    return $executou;
-}
-
+        } else {
+            
+            // --- CÓDIGO SEGURO PARA O SEU SERVIDOR ONLINE (MYSQLI) ---
+            $stmt = $db->prepare("INSERT INTO contatos (nome, email, telefone, mensagem) VALUES (?, ?, ?, ?)");
+            
+            // Se o prepare do MySQLi deu certo, associa os parâmetros e executa
+            if ($stmt) {
+                $stmt->bind_param("ssss", $nome, $email, $telefone, $mensagem);
+                $sucesso = $stmt->execute();
+                $stmt->close();
+                return $sucesso;
+            }
+            
+            return false;
+        }
+    }
 }

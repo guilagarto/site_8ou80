@@ -20,9 +20,11 @@ require_once __DIR__ . '/header.php';
                         <span class="blog-date"><?= date('d/m/Y', strtotime($post['publicado_em'])) ?></span>
                         <span class="blog-category"><?= htmlspecialchars($post['categoria']) ?></span>
                     </div>
-                    <h2><a href="#" class="blog-title-link"><?= htmlspecialchars($post['titulo']) ?></a></h2>
-                    <p><?= htmlspecialchars($post['resumo']) ?></p>
-                    <a href="#" class="blog-read-more">Ler artigo completo &rarr;</a>
+                    <!-- No seu app/views/blog.php, altere as tags de link do título e do "Ler mais" para: -->
+<h2><a href="<?php echo $base_url; ?>/post?slug=<?= $post['slug'] ?>" class="blog-title-link"><?= htmlspecialchars($post['titulo']) ?></a></h2>
+<p><?= htmlspecialchars($post['resumo']) ?></p>
+<a href="<?php echo $base_url; ?>/post?slug=<?= $post['slug'] ?>" class="blog-read-more">Ler artigo completo &rarr;</a>
+
                 </article>
             <?php endforeach; ?>
         <?php else: ?>
