@@ -1,7 +1,7 @@
 <?php
 // 1. Importa o cabeçalho do site (onde fica o menu, CSS e o topo)
 
-require_once __DIR__ . '/components/header.php';
+require_once __DIR__ . '/header.php';
 ?>
 
 <!-- 2. Conteúdo exclusivo da Página Inicial -->
@@ -166,5 +166,5 @@ require_once __DIR__ . '/components/header.php';
 
 <?php
 // 3. Importa o rodapé do site (onde ficam os scripts JS e as tags de fechamento)
-require_once __DIR__ . '/components/footer.php';
+require_once __DIR__ . '/footer.php';
 ?>

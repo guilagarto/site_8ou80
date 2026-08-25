@@ -1,14 +1,19 @@
 <?php
 // app/controllers/SolucoesController.php
-require_once __DIR__ . '/../models/Solucao.php';
+
+require_once __DIR__ . '/../config/database.php';
 
 class SolucoesController {
     
     public function index() {
-        // 1. Puxa a lista de serviços do banco de dados através do Model
-        $lista_solucoes = Solucao::listarTodas();
+        // 1. Conecta ao banco de dados
+        $db = Database::conectar();
         
-        // 2. Carrega a view entregando o array $lista_solucoes para o HTML
+        // 2. Faz a query buscando os campos da sua tabela real
+        $query = $db->query("SELECT id, titulo, descricao, icone, preco, ordem FROM solucoes ORDER BY ordem ASC");
+        $todasSolucoes = $query->fetchAll();
+
+        // 3. Inclui a view levando os dados salvos em $todasSolucoes
         require_once __DIR__ . '/../views/solucoes.php';
     }
 }
