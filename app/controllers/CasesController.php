@@ -10,8 +10,11 @@ class CasesController {
         
         $query = $db->query("SELECT id, badge, titulo, descricao, metrica, slug FROM cases ORDER BY id DESC");
         
-        // 🛠️ CORREÇÃO DA FUNÇÃO PARA MYSQLI
-        $meusCases = $query->fetch_all(MYSQLI_ASSOC); 
+        // 🛠️ LOGICA UNIVERSAL: Compatível com XAMPP (PDO) e Web (MySQLi)
+        $meusCases = [];
+        while ($row = $query->fetch()) {
+            $meusCases[] = $row;
+        }
 
         require_once __DIR__ . '/../views/cases.php';
     }

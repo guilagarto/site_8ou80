@@ -10,8 +10,11 @@ class BlogController {
         
         $query = $db->query("SELECT id, categoria, titulo, resumo, slug, publicado_em FROM posts ORDER BY id DESC");
         
-        // 🛠️ CORREÇÃO DA FUNÇÃO PARA MYSQLI
-        $meusPosts = $query->fetch_all(MYSQLI_ASSOC); 
+        // 🛠️ LOGICA UNIVERSAL: Lê os dados linha por linha de forma compatível com PDO e MySQLi
+        $meusPosts = [];
+        while ($row = $query->fetch()) {
+            $meusPosts[] = $row;
+        }
 
         require_once __DIR__ . '/../views/blog.php';
     }

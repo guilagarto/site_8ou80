@@ -24,7 +24,9 @@ if ($isLocal) {
     <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Injeta o caminho correto calibrado para produção -->
-    <link rel="stylesheet" href="<?php echo $css_path; ?>">
+   <!-- O parâmetro ?v=... força o navegador online a baixar o CSS novo imediatamente -->
+<link rel="stylesheet" href="<?php echo $css_path; ?>?v=<?php echo time(); ?>">
+
 </head>
 
 <body>
