@@ -28,50 +28,40 @@ class ContatoController {
 
             if (!empty($nome) && !empty($email) && !empty($mensagem)) {
                 
+                // 1. Salva primeiro no banco de dados para garantir o lead
+                $sucesso = Contato::salvar($nome, $email, $telefone, $mensagem);
+
                 // ==========================================================================
-                // 🚀 PASSO 1: DISPARO DO TELEGRAM ANTES DO BANCO (BLINDAGEM E TESTE SEGURO)
+                // 🚀 DISPARO VIA GET SEGURO (MÉTODO ULTRA COMPATÍVEL COM HOSPEDAGENS)
                 // ==========================================================================
                 $tokenAPI = '8850246552:AAFyB-WP2GLwu7iTn9Xx7dSczAB5hLW7EZk'; 
                 $chatID   = '6946692075';       
 
-                // Texto limpo sem formatação complexa para garantir que o Telegram não rejeite
-                $textoTelegram = "💼 Novo Lead Recebido - 8ou80\n\n";
-                $textoTelegram .= "👤 Nome: " . $nome . "\n";
-                $textoTelegram .= "E-mail: " . $_POST['email'] . "\n";
-                $textoTelegram .= "📞 Telefone: " . (!empty($telefone) ? $telefone : "Nao informado") . "\n\n";
-                $textoTelegram .= "💬 Mensagem: " . $_POST['mensagem'];
+                // Texto super limpo sem nenhuma tag ou caractere especial
+                $textoTelegram = "Novo Lead Recebido no Site\n\nNome: " . $nome . "\nE-mail: " . $_POST['email'] . "\nTelefone: " . $telefone . "\nMensagem: " . $_POST['mensagem'];
 
-                $urlTelegram = "https://telegram.org" . $tokenAPI . "/sendMessage";
+                // Monta a URL completa em uma string única enviando por GET
+                $urlTelegram = "https://telegram.org" . $tokenAPI . "/sendMessage?chat_id=" . $chatID . "&text=" . urlencode($textoTelegram);
 
-                $dados = [
-                    'chat_id' => $chatID,
-                    'text'    => $textoTelegram
-                ];
-
+                // Executa via cURL nativo em modo GET
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $urlTelegram);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($dados));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); // Aumentado para garantir conexão lenta
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
                 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
-                curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-
-                // Executa o envio e captura a resposta do Telegram para diagnóstico interno
-                $respostaTelegram = curl_exec($ch);
+                curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+                
+                $resposta = curl_exec($ch);
+                $erroCurl = curl_error($ch);
                 curl_close($ch);
 
-                // ==========================================================================
-                // 🚀 PASSO 2: SALVAMENTO NO BANCO DE DADOS
-                // ==========================================================================
-                $sucesso = Contato::salvar($nome, $email, $telefone, $mensagem);
-                
+                // Se o cURL falhar ou o banco der certo, nós gerenciamos o fluxo aqui
                 if ($sucesso) {
                     $_SESSION['sucesso'] = "Sua mensagem foi enviada com sucesso! Logo entraremos em contato.";
                 } else {
-                    // Se o banco falhar na Hostinger, avisamos na tela, mas o Telegram já disparou acima!
-                    $_SESSION['sucesso'] = "Sua mensagem foi processada com sucesso comerciais.";
+                    $_SESSION['erro'] = "Erro ao salvar dados.";
                 }
                 
                 header("Location: contato");
