@@ -37,40 +37,51 @@ class ContatoController {
                 // 3. Salva no banco de dados através do seu Model Híbrido (PDO/MySQLi)
                 $sucesso = Contato::salvar($nome, $email, $telefone, $mensagem);
                 
-                if ($sucesso) {
-                    // Guarda o alerta de sucesso na sessão para a View exibir
-                    $_SESSION['sucesso'] = "Sua mensagem foi enviada com sucesso! Logo entraremos em contato.";
+               if ($sucesso) {
+    // Guarda o alerta de sucesso na sessão para a View exibir
+    $_SESSION['sucesso'] = "Sua mensagem foi enviada com sucesso! Logo entraremos em contato.";
 
-                    // ==========================================================================
-                    // 🚀 ENGENHARIA DE NOTIFICAÇÃO PRIVADA EM SEGUNDO PLANO (TELEGRAM API)
-                    // ==========================================================================
-                    // Insira aqui os dados que você gerou com o @BotFather e o @userinfobot
-                    $tokenAPI = '8850246552:AAFyB-WP2GLwu7iTn9Xx7dSczAB5hLW7EZk';
-                    $chatID   = '6946692075';
+    // ==========================================================================
+    // 🚀 DISPARO BLINDADO: NOTIFICAÇÃO PRIVADA VIA cURL (TELEGRAM API)
+    // ==========================================================================
+    $tokenAPI = 'COLE_AQUI_O_TOKEN_DO_SEU_PRINT'; // Coloque seu token aqui
+    $chatID   = 'COLE_AQUI_O_SEU_CHAT_ID';       // Coloque seu ID numérico aqui
 
-                    // Formata a mensagem com Markdown para chegar organizada no seu celular
-                    $textoTelegram = "💼 *Novo Lead Recebido - 8ou80*\n\n";
-                    $textoTelegram .= "👤 *Nome:* " . $nome . "\n";
-                    $textoTelegram .= "📧 *E-mail:* " . $_POST['email'] . "\n"; // Exibe o e-mail preenchido
-                    $textoTelegram .= "📞 *Telefone:* " . (!empty($telefone) ? $telefone : "Não informado") . "\n\n";
-                    $textoTelegram .= "💬 *Mensagem:* \n" . $_POST['mensagem'];
+    // Formata a mensagem com Markdown para chegar organizada no seu celular
+    $textoTelegram = "💼 *Novo Lead Recebido - 8ou80*\n\n";
+    $textoTelegram .= "👤 *Nome:* " . $nome . "\n";
+    $textoTelegram .= "📧 *E-mail:* " . $_POST['email'] . "\n";
+    $textoTelegram .= "📞 *Telefone:* " . (!empty($telefone) ? $telefone : "Não informado") . "\n\n";
+    $textoTelegram .= "💬 *Mensagem:* \n" . $_POST['mensagem'];
 
-                    // Prepara a rota de disparo HTTP para os servidores do Telegram
-                    $urlTelegram = "https://telegram.org" . $tokenAPI . "/sendMessage?chat_id=" . $chatID . "&parse_mode=Markdown&text=" . urlencode($textoTelegram);
+    // Monta a URL da API do Telegram
+    $urlTelegram = "https://telegram.org" . $tokenAPI . "/sendMessage";
 
-                    // Cria um contexto com tempo limite (timeout) para o site não ficar lento
-                    $contexto = stream_context_create([
-                        'http' => ['timeout' => 3] // Limita a requisição a 3 segundos no máximo
-                    ]);
+    // Prepara os dados para o envio seguro via POST
+    $dados = [
+        'chat_id'    => $chatID,
+        'text'       => $textoTelegram,
+        'parse_mode' => 'Markdown'
+    ];
 
-                    // Faz o disparo invisível em segundo plano
-                    @file_get_contents($urlTelegram, false, $contexto);
+    // Inicia o motor cURL profissional (Aceito por todas as hospedagens e pelo XAMPP)
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $urlTelegram);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($dados));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3); // Tempo limite de 3 segundos
+    curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignora erros de certificado SSL locais
 
-                    // 🔄 Redireciona via GET limpando os dados de post do navegador (Evita duplicações por F5)
-                    header("Location: contato");
-                    exit;
+    // Executa o disparo silencioso em segundo plano
+    curl_exec($ch);
+    curl_close($ch);
 
-                } else {
+    // 🔄 Redireciona via GET limpando os dados de post do navegador
+    header("Location: contato");
+    exit;
+} else {
                     $_SESSION['erro'] = "Houve um erro técnico ao salvar sua mensagem. Tente novamente.";
                     header("Location: contato");
                     exit;
