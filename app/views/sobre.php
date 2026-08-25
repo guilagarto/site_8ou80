@@ -1,12 +1,8 @@
 <?php
-// 1. Configurações de erro e importação do cabeçalho global
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
+// Importa o cabeçalho global reconfigurado de forma única
 require_once __DIR__ . '/header.php';
 ?>
 
-<!-- 2. Conteúdo exclusivo da Página Sobre Nós -->
 <main class="main-container">
     <header class="page-intro">
         <span class="subtitle-badge">Quem Somos</span>
@@ -42,6 +38,6 @@ require_once __DIR__ . '/header.php';
 </main>
 
 <?php
-// 3. Importação do rodapé global do site
+// Importa o rodapé global
 require_once __DIR__ . '/footer.php';
 ?>
