@@ -18,8 +18,17 @@ class Router
      */
     public function dispatch(): void
     {
-        // Captura a URL amigável atual do Apache ou define 'home' como padrão
+        // 1. Captura a URL vinda da requisição (padrão do .htaccess / URL Amigável)
         $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'home';
+
+        // 🛠️ INTELIGÊNCIA DE AMBIENTE: Remove o nome da pasta de subdiretório se estiver no Localhost
+        // Isso impede que o roteador online dispare o erro 404 por incompatibilidade de caminhos
+        $url = str_replace('8ou80-marketing/', '', $url);
+
+        // Se após a limpeza a string ficar vazia (ex: acessou a raiz), define como 'home'
+        if ($url === '') {
+            $url = 'home';
+        }
 
         // 🛡️ TRATAMENTO DO ERRO 404: Rota não cadastrada no arquivo web.php
         if (!isset($this->routes[$url])) {
