@@ -44,8 +44,8 @@ class ContatoController {
     // ==========================================================================
     // 🚀 DISPARO BLINDADO: NOTIFICAÇÃO PRIVADA VIA cURL (TELEGRAM API)
     // ==========================================================================
-    $tokenAPI = 'COLE_AQUI_O_TOKEN_DO_SEU_PRINT'; // Coloque seu token aqui
-    $chatID   = 'COLE_AQUI_O_SEU_CHAT_ID';       // Coloque seu ID numérico aqui
+    $tokenAPI = '8850246552:AAFyB-WP2GLwu7iTn9Xx7dSczAB5hLW7EZk'; // Coloque seu token aqui
+    $chatID   = '6946692075';       // Coloque seu ID numérico aqui
 
     // Formata a mensagem com Markdown para chegar organizada no seu celular
     $textoTelegram = "💼 *Novo Lead Recebido - 8ou80*\n\n";
